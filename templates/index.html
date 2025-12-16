@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrinterTrack - Printer Monitoring</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🖨️ PrinterTrack</h1>
+                <p class="subtitle">SNMP Printer Monitoring System</p>
+            </div>
+            <div class="header-right">
+                <button id="refreshAllBtn" class="btn btn-primary">
+                    <span class="spinner" id="refreshSpinner"></span>
+                    🔄 Refresh All
+                </button>
+                <button id="addPrinterBtn" class="btn btn-success">+ Add Printer</button>
+                <button id="exportBtn" class="btn btn-secondary">📥 Export</button>
+            </div>
+        </header>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card stat-total">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">Total Printers</div>
+            </div>
+            <div class="stat-card stat-ok">
+                <div class="stat-value" id="statOk">0</div>
+                <div class="stat-label">OK</div>
+            </div>
+            <div class="stat-card stat-warning">
+                <div class="stat-value" id="statWarning">0</div>
+                <div class="stat-label">Warning</div>
+            </div>
+            <div class="stat-card stat-error">
+                <div class="stat-value" id="statError">0</div>
+                <div class="stat-label">Error</div>
+            </div>
+            <div class="stat-card stat-offline">
+                <div class="stat-value" id="statOffline">0</div>
+                <div class="stat-label">Offline</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel - Printer List -->
+            <div class="left-panel">
+                <div class="panel-header">
+                    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search printers...">
+                    <select id="filterSelect" class="filter-select">
+                        <option value="All">All Status</option>
+                        <option value="OK">OK</option>
+                        <option value="Warning">Warning</option>
+                        <option value="Error">Error</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+                <div id="printerList" class="printer-list">
+                    <!-- Printer items will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Center Panel - Printer Details -->
+            <div class="center-panel">
+                <button class="mobile-back-btn mobile-only" onclick="showPrinterList()">
+                    ← Back to Printers
+                </button>
+                <div id="printerDetails" class="printer-details">
+                    <div class="empty-state">
+                        <div class="empty-icon">🖨️</div>
+                        <h2>Select a Printer</h2>
+                        <p>Choose a printer from the list to view details</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Alerts -->
+            <div class="right-panel">
+                <div class="panel-header">
+                    <h3>🚨 Active Alerts</h3>
+                </div>
+                <div id="alertsList" class="alerts-list">
+                    <div class="empty-state-small">
+                        <p>No active alerts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Printer Modal -->
+    <div id="addPrinterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Printer</h2>
+                <button class="close-btn" onclick="closeAddPrinterModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="printerName">Printer Name</label>
+                    <input type="text" id="printerName" class="form-input" placeholder="e.g., Sales Office Printer">
+                </div>
+                <div class="form-group">
+                    <label for="printerIP">IP Address</label>
+                    <input type="text" id="printerIP" class="form-input" placeholder="e.g., 10.10.5.28">
+                </div>
+                <div class="form-group">
+                    <label for="printerCommunity">SNMP Community (optional)</label>
+                    <input type="text" id="printerCommunity" class="form-input" placeholder="default: public" value="public">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddPrinterModal()">Cancel</button>
+                <button class="btn btn-success" onclick="savePrinter()">Add Printer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Printer Modal -->
+    <div id="editPrinterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Printer</h2>
+                <button class="close-btn" onclick="closeEditPrinterModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editPrinterName">Printer Name</label>
+                    <input type="text" id="editPrinterName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="editPrinterCommunity">SNMP Community</label>
+                    <input type="text" id="editPrinterCommunity" class="form-input">
+                </div>
+                <input type="hidden" id="editPrinterIP">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditPrinterModal()">Cancel</button>
+                <button class="btn btn-success" onclick="updatePrinter()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
