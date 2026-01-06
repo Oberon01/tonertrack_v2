@@ -1,6 +1,10 @@
 # TonerTrack v2.0 🖨️
 
-A modern, web-based SNMP printer monitoring system built with FastAPI and vanilla JavaScript.
+An affordable, web-based SNMP printer monitoring system built with FastAPI and vanilla JavaScript.
+
+Designed for individuals and small-to-medium businesses (or any organization) that want a practical, low-cost way to monitor printers without paying for expensive commercial monitoring services.
+
+TonerTrack is free and open-source software (MIT License) — use, modify, and redistribute it at no cost.
 
 ## Features ✨
 
