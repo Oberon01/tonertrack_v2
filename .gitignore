@@ -1,6 +1,25 @@
+__pycache__/
+*.pyc
 
+# Virtualenvs
 .venv
-logs/*
+venv/
+
+# Logs and runtime data
+logs/
+data/
+
+# Python artifacts
+__pycache__/
+*.pyc
+
+# Databases and exports
+*.sqlite
 *.json
+*.bak
+
+# Environment files
 .env
-__py*
+
+# OS
+.DS_Store
