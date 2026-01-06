@@ -95,9 +95,10 @@ http://localhost:8000
 
 ## Data Storage 💾
 
-Printer data is stored in a JSON file:
-- **Windows**: `%APPDATA%\TonerTrack\printers.json`
-- **Linux/Mac**: `~/.tonertrack/printers.json`
+Printer data is stored in a JSON file by default in the project `data/` directory. You can override this with the `TONERTRACK_DATA_DIR` environment variable.
+
+- **Default (project-local)**: `./data/printers.json`
+- **Or override**: set `TONERTRACK_DATA_DIR` to an absolute path (e.g. `%APPDATA%\TonerTrack\printers.json` on Windows).
 
 ## SNMP Configuration 🔧
 
@@ -231,18 +232,16 @@ tonertrack_v2/
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Building for Production
+## Building for Production
 
-**Option 1: Run as Python Script**
+Run the app with a production-grade server (recommended):
+
 ```bash
-python main.py
+# Run with Uvicorn
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
 ```
 
-**Option 2: PyInstaller (Windows .exe)**
-```bash
-pip install pyinstaller
-pyinstaller --onefile --add-data "static;static" --add-data "templates;templates" main.py
-```
+Notes: Docker and compose artifacts are not included in this repository; if you need containerized deployment, add a `Dockerfile` and `docker-compose.yml` matching this command.
 
 ## Migrating from TonerTrack v1 📦
 
@@ -272,6 +271,6 @@ For issues or questions, please create an issue in the repository or contact you
 
 ---
 
-**Version**: 2.0  
-**Last Updated**: November 2024  
+**Version**: 1.0.0  
+**Last Updated**: 2026-01-06  
 **Maintained by**: IT Department

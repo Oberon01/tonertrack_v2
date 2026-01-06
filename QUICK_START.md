@@ -29,7 +29,8 @@ Useful endpoints
 - `GET /api/reports/monthly.csv` — export monthly usage
 
 Data location
-- Default data dir: `data/printers.json` inside project or `TONERTRACK_DATA_DIR` if set
+- Default data dir: `./data/printers.json` inside the project
+- Override with environment variable: `TONERTRACK_DATA_DIR`
 
 Quick troubleshooting
 - Port conflict: change port when starting uvicorn (use `uvicorn main:app --port 8080`)

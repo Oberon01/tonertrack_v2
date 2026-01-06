@@ -32,7 +32,7 @@ is_polling = False
 
 # Auto-polling configuration
 AUTO_POLL_ENABLED = True  # Set to False to disable auto-polling
-AUTO_POLL_INTERVAL = 2 * 60  # 5 minutes in seconds
+AUTO_POLL_INTERVAL = 5 * 60  # 5 minutes in seconds
 auto_poll_task = None
 last_poll_time = None
 
