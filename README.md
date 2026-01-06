@@ -21,7 +21,7 @@ TonerTrack is free and open-source software (MIT License) — use, modify, and r
 TonerTrack v2 is a FastAPI-backed web application for monitoring network printers via SNMP. Current major features and behaviors implemented in this repository include:
 
 - Automatic polling: the server polls all configured printers on a schedule (`AUTO_POLL_INTERVAL`) and updates model, serial, supplies, errors and total-pages values.
-- Print-server sync: the app can discover printers from Windows print servers (e.g. `\\dc3`, `\\dc4`) and map those discovered devices into logical "views" (e.g. `B1`, `B2`) via `TONERTRACK_PRINT_SERVER_VIEWS`.
+- Print-server sync: the app can discover printers from Windows print servers (e.g. `\\server01`, `\\server02`) and map those discovered devices into logical "views" (e.g. `Label01`, `Label02`) via `TONERTRACK_PRINT_SERVER_VIEWS`.
 - Non-destructive sync: manual name edits in the UI set a `user_overridden` flag so auto-sync does not overwrite user-provided names.
 - Pages history: the app records monthly pages printed (delta of the SNMP total-pages counter) into `pages_history` per printer, enabling historical usage analysis.
 - CSV exports: endpoints exist to export per-printer usage (`/api/printers/{ip}/usage.csv`) and a full monthly report (`/api/reports/monthly.csv`).
@@ -148,7 +148,7 @@ Content-Type: application/json
 
 {
   "name": "Office Printer",
-  "ip": "10.10.5.28",
+  "ip": "XX.XX.XX.XX",
   "community": "public"
 }
 ```
@@ -277,4 +277,3 @@ For issues or questions, please create an issue in the repository or contact you
 
 **Version**: 1.0.0  
 **Last Updated**: 2026-01-06  
-**Maintained by**: IT Department
