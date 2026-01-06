@@ -1,3 +1,30 @@
+# TonerTrack v2 — Project Summary
+
+TonerTrack v2 is a FastAPI-based web app for monitoring network printers via SNMP.
+
+Key features
+- Web UI with search, filter, and grouped views
+- Background polling and on-demand polling
+- Print-server discovery and periodic sync (map servers → views)
+- Non-destructive sync: respects `user_overridden` names
+- Monthly pages history and CSV exports
+- Atomic JSON saves with an audit log
+
+Tech stack
+- Python + FastAPI, uvicorn
+- PySNMP for SNMP queries
+- Vanilla JS frontend (static files)
+- JSON file storage (`printers.json`)
+
+Deployment
+- Run via `python main.py`, `start.py`, or Docker compose
+- Configure via environment variables (see README)
+
+Next steps / recommendations
+- Add optional user authentication for production
+- Consider SNMPv3 support and HTTPS
+
+For usage instructions and API reference, see `README.md` and `QUICK_START.md`.
 # TonerTrack v2.0 - Project Summary
 
 ## 📦 What You Received

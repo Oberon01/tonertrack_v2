@@ -1,0 +1,24 @@
+````markdown
+# TonerTrack v2.0 - Architecture Overview
+
+## System Architecture
+
+Browser → FastAPI → SNMP Utilities → Printers (SNMP)
+
+### Components
+- `main.py` - FastAPI server and background tasks
+- `snmp_utils.py` - SNMP query helpers (model, serial, supplies, pages)
+- `templates/` + `static/` - Frontend files
+- `data/printers.json` - JSON storage (atomic saves + audit log)
+
+### Key Endpoints
+- `GET /api/printers` - list printers
+- `POST /api/printers/poll-all` - poll all printers
+- `POST /api/sync-print-servers` - import from Windows print servers
+- `GET /api/reports/monthly.csv` - export monthly usage
+
+### Safety Notes
+- Consider authentication for production
+- Use SNMPv3 where available
+- Backup `data/printers.json` and `data/printers_audit.log`
+````

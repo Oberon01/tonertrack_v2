@@ -1,3 +1,21 @@
+# Delivery Summary — TonerTrack v2
+
+Contents
+- Application: `main.py`, `snmp_utils.py`, `start.py`, `start.bat`
+- Web UI: `templates/index.html`, `static/js/app.js`, `static/css/styles.css`
+- Data: `printers_sample.json`, runtime `data/printers.json`
+- Docs: `README.md`, `QUICK_START.md`, `PROJECT_SUMMARY.md`, `ARCHITECTURE.md`, `DISCOVERY_GUIDE.md`
+
+Quick start
+1. Install requirements: `pip install -r requirements.txt`
+2. Run the app: `python main.py` (or use `start.py` / `start.bat`)
+3. Visit: `http://localhost:8000`
+
+Support
+- API docs at `http://localhost:8000/docs`
+- For quick help see `QUICK_START.md` and `README.md`
+
+This file summarizes what was delivered; the `README.md` contains the operational details.
 # 🎁 TonerTrack v2.0 - Delivery Package
 
 ## ✅ What You Received

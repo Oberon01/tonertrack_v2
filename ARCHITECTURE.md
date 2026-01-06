@@ -1,3 +1,33 @@
+# TonerTrack v2 — Architecture (summary)
+
+Components
+- Frontend: static HTML/CSS/JS (`templates/`, `static/`)
+- Backend: `main.py` (FastAPI) exposing REST endpoints
+- SNMP layer: `snmp_utils.py` for device queries
+- Storage: JSON files under `data/` (atomic saves + audit log)
+
+Key endpoints
+- `GET /api/printers` — list printers
+- `POST /api/printers/{ip}/poll` — poll a single printer
+- `POST /api/printers/poll-all` — poll all printers
+- `POST /api/sync-print-servers` — import/sync from Windows print servers
+- `GET /api/printers/{ip}/usage.csv` and `GET /api/reports/monthly.csv` — CSV exports
+
+Data flow (high level)
+1. UI requests `/api/printers` → server reads `data/printers.json` and returns JSON
+2. Poll operations call `snmp_utils` to query printers, then server updates JSON and appends audit entries
+3. Print-server sync imports names/IPs and sets `location` and `user_overridden` rules
+
+SNMP notes
+- Uses standard Printer MIB OIDs (model, serial, supplies, page count)
+- SNMP v1/v2c supported via PySNMP; community string stored per-printer
+
+Safety & recommendations
+- Run on a trusted network or add auth (FastAPI supports various auth schemes)
+- Use SNMPv3 where available and enable HTTPS in production
+- Keep backups of `data/printers.json` and `data/printers_audit.log`
+
+For full technical diagrams and details, see the original `ARCHITECTURE.md` or ask me to merge these notes into it.
 # TonerTrack v2.0 - Architecture Overview
 
 ## System Architecture

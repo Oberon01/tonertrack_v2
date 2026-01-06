@@ -1,0 +1,6 @@
+
+.venv
+logs/*
+*.json
+.env
+__py*

@@ -54,13 +54,19 @@
             <div class="left-panel">
                 <div class="panel-header">
                     <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search printers...">
-                    <select id="filterSelect" class="filter-select">
+                        <select id="filterSelect" class="filter-select">
                         <option value="All">All Status</option>
                         <option value="OK">OK</option>
                         <option value="Warning">Warning</option>
                         <option value="Error">Error</option>
                         <option value="Offline">Offline</option>
                     </select>
+                        <select id="viewSelect" class="filter-select">
+                            <option value="All">All Views</option>
+                            <option value="B1">B1</option>
+                            <option value="B2">B2</option>
+                            <option value="Unassigned">Unassigned</option>
+                        </select>
                 </div>
                 <div id="printerList" class="printer-list">
                     <!-- Printer items will be dynamically inserted here -->

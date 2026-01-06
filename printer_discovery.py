@@ -365,7 +365,14 @@ if __name__ == "__main__":
         response = input("Export to JSON? (y/n): ")
         if response.lower() == 'y':
             import json
-            filename = "discovered_printers.json"
-            with open(filename, 'w') as f:
+            from pathlib import Path
+            import os
+
+            BASE_DIR = Path(__file__).resolve().parent
+            DATA_DIR = Path(os.environ.get("TONERTRACK_DATA_DIR", str(BASE_DIR / "data")))
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+            filename = DATA_DIR / "discovered_printers.json"
+            with open(filename, "w", encoding="utf-8") as f:
                 json.dump(printers, f, indent=2)
             print(f"Exported to {filename}")

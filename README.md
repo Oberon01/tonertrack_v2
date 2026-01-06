@@ -12,6 +12,20 @@ A modern, web-based SNMP printer monitoring system built with FastAPI and vanill
 - **Export/Import**: Backup and restore your printer database
 - **Cross-platform**: Works on Windows, Linux, and macOS
 
+## Overview (Current state)
+
+TonerTrack v2 is a FastAPI-backed web application for monitoring network printers via SNMP. Current major features and behaviors implemented in this repository include:
+
+- Automatic polling: the server polls all configured printers on a schedule (`AUTO_POLL_INTERVAL`) and updates model, serial, supplies, errors and total-pages values.
+- Print-server sync: the app can discover printers from Windows print servers (e.g. `\\dc3`, `\\dc4`) and map those discovered devices into logical "views" (e.g. `B1`, `B2`) via `TONERTRACK_PRINT_SERVER_VIEWS`.
+- Non-destructive sync: manual name edits in the UI set a `user_overridden` flag so auto-sync does not overwrite user-provided names.
+- Pages history: the app records monthly pages printed (delta of the SNMP total-pages counter) into `pages_history` per printer, enabling historical usage analysis.
+- CSV exports: endpoints exist to export per-printer usage (`/api/printers/{ip}/usage.csv`) and a full monthly report (`/api/reports/monthly.csv`).
+- Frontend grouping & filtering: the UI groups printers by `location` (view) and provides a `view` filter to show `B1`, `B2`, `Unassigned`, or `All`.
+- Atomic saves & audit log: writes to the JSON DB are performed atomically and append audit entries to `data/printers_audit.log` to help trace modifications.
+
+These features are implemented to be conservative by default — discovery and automatic operations will not overwrite user data unless explicitly configured.
+
 ## Screenshots
 
 ### Dashboard
@@ -139,6 +153,24 @@ Content-Type: application/json
 POST /api/printers/{ip}/poll
 ```
 
+#### Printer Usage (JSON)
+```http
+GET /api/printers/{ip}/usage
+```
+
+Returns last 6-month buckets, average, last-month change %, and full `pages_history`.
+
+#### Printer Usage (CSV)
+```http
+GET /api/printers/{ip}/usage.csv
+```
+
+#### Monthly Report (CSV)
+```http
+GET /api/reports/monthly.csv
+```
+
+
 #### Delete Printer
 ```http
 DELETE /api/printers/{ip}
@@ -190,6 +222,7 @@ tonertrack_v2/
 │       └── app.js       # Frontend logic
 └── templates/
     └── index.html       # Main HTML page
+  └── data/              # runtime data directory with `printers.json` and audit log
 ```
 
 ### Running in Development Mode

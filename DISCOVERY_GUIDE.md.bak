@@ -1,0 +1,45 @@
+````markdown
+# Printer Discovery Guide
+
+## Automatically Import Printers from Print Server
+
+TonerTrack can automatically discover printers from your Windows Print Server!
+
+---
+
+## Method 1: Command Line Discovery
+
+### From Windows Print Server (PowerShell)
+```bash
+python printer_discovery.py print_server YOUR_PRINT_SERVER_NAME
+```
+
+**Example:**
+```bash
+python printer_discovery.py print_server PRINTSERVER01
+python printer_discovery.py print_server 192.168.1.10
+```
+
+### From Local Computer (WMI)
+```bash
+python printer_discovery.py wmi
+```
+
+### Network Scan (finds all SNMP devices)
+```bash
+python printer_discovery.py network_scan 10.10.5.0/24
+```
+
+---
+
+## Method 2: API Discovery (Programmatic)
+
+### Discover from Print Server
+```bash
+curl -X POST "http://localhost:8000/api/discover?method=print_server&server_name=PRINTSERVER01"
+```
+
+---
+
+This guide explains common discovery approaches; after discovery you must import and poll to populate toner/serial data.
+````

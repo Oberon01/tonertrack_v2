@@ -1,3 +1,28 @@
+### Docker quick notes
+
+Build and run with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+The app listens on port `8000` by default (http://localhost:8000).
+
+Environment variables you may want to set in your compose file:
+- `TONERTRACK_DATA_DIR` — path for `printers.json` and audit log
+- `TONERTRACK_PRINT_SERVERS` — comma-separated Windows print servers
+- `TONERTRACK_PRINT_SERVER_VIEWS` — mapping of server→view (e.g. `\\dc3=B2,\\dc4=B1`)
+- `TONERTRACK_PRINT_SYNC_INTERVAL` — automatic sync interval (seconds)
+
+If you must target a specific platform for cloud builds:
+
+```bash
+docker build --platform=linux/amd64 -t tonertrack:v2 .
+```
+
+Push to your registry as usual and consult Docker docs for registry auth.
+
+Reference: https://docs.docker.com/language/python/
 ### Building and running your application
 
 When you're ready, start your application by running:

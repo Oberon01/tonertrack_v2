@@ -1,3 +1,17 @@
+# Documentation Index — TonerTrack v2
+
+Primary docs
+- README.md — Full user manual and configuration
+- QUICK_START.md — Quick start steps (run and open UI)
+- PROJECT_SUMMARY.md — High-level project overview
+- ARCHITECTURE.md — Technical architecture and API
+- DISCOVERY_GUIDE.md — Printer discovery and import methods
+
+Start here
+- If you're deploying: read `QUICK_START.md` then `README.md`
+- If you're a developer: read `ARCHITECTURE.md` then explore source
+
+API docs are available at: `http://localhost:8000/docs` when the server is running.
 # 📚 TonerTrack v2.0 - Documentation Index
 
 Welcome to TonerTrack v2.0! This index will help you find the right documentation for your needs.

@@ -1,3 +1,33 @@
+# Printer Discovery — Quick Guide
+
+Supported discovery methods
+
+1) Print Server (recommended for Windows environments)
+- The app can import printer names and IPs from Windows print servers.
+- API: `POST /api/sync-print-servers` (uses `TONERTRACK_PRINT_SERVERS` env var by default)
+
+2) Network scan (SNMP)
+- Use the `printer_discovery.py network_scan` script to scan a subnet and export JSON.
+- After discovery, import via `/api/import-discovered`.
+
+3) WMI (Windows only)
+- Run `printer_discovery.py wmi` on the target host to list local printers.
+
+Typical workflow
+1. Discover printers (print server or network scan)
+2. Review exported `discovered_printers.json`
+3. Import via API or place into `data/printers.json` carefully
+4. Click "Refresh All" in the UI to populate SNMP details
+
+Notes
+- Discovery collects names and IPs; SNMP polling is required to obtain toner levels, serial, and page counts.
+- If you rename a printer in the UI, automatic sync will not overwrite that name (it sets `user_overridden`).
+
+Troubleshooting
+- Print server access errors: run discovery with administrator privileges on the print server
+- Network scan finds non-printers: verify IPs and check SNMP OIDs before import
+
+For full examples see `printer_discovery.py` and the API docs at `/docs`.
 # Printer Discovery Guide
 
 ## Automatically Import Printers from Print Server

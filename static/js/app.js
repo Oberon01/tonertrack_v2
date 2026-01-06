@@ -3,6 +3,7 @@ let printers = {};
 let selectedPrinterIP = null;
 let searchQuery = '';
 let filterStatus = 'All';
+let filterView = 'All';
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
@@ -42,6 +43,8 @@ function setupEventListeners() {
     document.getElementById('exportBtn').addEventListener('click', exportPrinters);
     document.getElementById('searchInput').addEventListener('input', handleSearch);
     document.getElementById('filterSelect').addEventListener('change', handleFilter);
+    const viewEl = document.getElementById('viewSelect');
+    if (viewEl) viewEl.addEventListener('change', handleViewChange);
 }
 
 // Load all printers
@@ -68,40 +71,58 @@ async function loadPrinters() {
 function renderPrinterList() {
     const listContainer = document.getElementById('printerList');
     listContainer.innerHTML = '';
-    
     // Filter printers
-    const filteredPrinters = Object.entries(printers).filter(([ip, printer]) => {
-        const matchesSearch = printer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            ip.includes(searchQuery);
+    const filteredEntries = Object.entries(printers).filter(([ip, printer]) => {
+        const matchesSearch = printer.name.toLowerCase().includes(searchQuery.toLowerCase()) || ip.includes(searchQuery);
         const matchesFilter = filterStatus === 'All' || printer.status === filterStatus;
-        return matchesSearch && matchesFilter;
+        const loc = (printer.location || 'Unassigned');
+        const matchesView = filterView === 'All' || loc === filterView;
+        return matchesSearch && matchesFilter && matchesView;
     });
-    
-    if (filteredPrinters.length === 0) {
+
+    if (filteredEntries.length === 0) {
         listContainer.innerHTML = '<div class="empty-state-small"><p>No printers found</p></div>';
         return;
     }
-    
-    // Sort by name
-    filteredPrinters.sort((a, b) => a[1].name.localeCompare(b[1].name));
-    
-    filteredPrinters.forEach(([ip, printer]) => {
-        const item = document.createElement('div');
-        item.className = `printer-item status-${printer.status.toLowerCase()}`;
-        if (ip === selectedPrinterIP) {
-            item.classList.add('selected');
-        }
-        
-        item.innerHTML = `
-            <div class="status-dot ${printer.status.toLowerCase()}"></div>
-            <div class="printer-info">
-                <div class="printer-name">${escapeHtml(printer.name)}</div>
-                <div class="printer-ip">${escapeHtml(ip)}</div>
-            </div>
-        `;
-        
-        item.addEventListener('click', () => selectPrinter(ip));
-        listContainer.appendChild(item);
+
+    // Group by location (B1/B2/Unassigned)
+    const groups = {};
+    filteredEntries.forEach(([ip, printer]) => {
+        const loc = (printer.location || 'Unassigned');
+        if (!groups[loc]) groups[loc] = [];
+        groups[loc].push([ip, printer]);
+    });
+
+    // Order groups: B1, B2, then others alphabetically
+    const preferred = ['B1', 'B2'];
+    const otherGroups = Object.keys(groups).filter(g => !preferred.includes(g)).sort();
+    const orderedGroups = [...preferred.filter(g => groups[g]), ...otherGroups];
+
+    orderedGroups.forEach(groupName => {
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        header.innerHTML = `<h4>${escapeHtml(groupName)}</h4>`;
+        listContainer.appendChild(header);
+
+        // Sort group by name
+        groups[groupName].sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+        groups[groupName].forEach(([ip, printer]) => {
+            const item = document.createElement('div');
+            item.className = `printer-item status-${printer.status.toLowerCase()}`;
+            if (ip === selectedPrinterIP) item.classList.add('selected');
+
+            item.innerHTML = `
+                <div class="status-dot ${printer.status.toLowerCase()}"></div>
+                <div class="printer-info">
+                    <div class="printer-name">${escapeHtml(printer.name)} ${printer.user_overridden ? '<span class="lock" title="Name protected">🔒</span>' : ''}</div>
+                    <div class="printer-ip">${escapeHtml(ip)}</div>
+                </div>
+            `;
+
+            item.addEventListener('click', () => selectPrinter(ip));
+            listContainer.appendChild(item);
+        });
     });
 }
 
@@ -196,7 +217,7 @@ function showPrinterDetails(ip) {
     detailsContainer.innerHTML = `
         <div class="details-header">
             <div class="details-title">
-                <h2>${escapeHtml(printer.name)}</h2>
+                <h2>${escapeHtml(printer.name)} ${printer.user_overridden ? '<span class="lock" title="Name protected">🔒</span>' : ''}</h2>
                 <div class="ip">${escapeHtml(ip)}</div>
             </div>
             <div class="details">
@@ -236,6 +257,72 @@ function showPrinterDetails(ip) {
     
     // Update alerts panel
     updateAlertsPanel();
+
+    // Fetch and render pages/month usage
+    try {
+        fetch(`/api/printers/${ip}/usage`).then(r => r.json()).then(data => {
+            const usageHtml = renderUsageSection(data);
+            detailsContainer.insertAdjacentHTML('beforeend', usageHtml);
+        }).catch(err => console.warn('Usage fetch failed', err));
+    } catch (err) {
+        console.warn('Usage fetch error', err);
+    }
+}
+
+function renderUsageSection(data) {
+    if (!data || !data.last_6_months) return '';
+
+    let html = `<div class="usage-section"><h3>Pages / Month</h3>`;
+    html += `<div class="usage-stats">Average (6): ${data.avg_last_6} pages`;
+    if (data.month_change_pct !== null && data.month_change_pct !== undefined) {
+        html += ` &nbsp; | &nbsp; Change vs prev: ${data.month_change_pct}%`;
+    }
+    html += `</div>`;
+
+    // small sparkline SVG
+    const values = data.last_6_months.map(it => it.pages || 0);
+    const maxV = Math.max(...values, 1);
+    const width = 150, height = 40, pad = 4;
+    const step = (width - pad*2) / Math.max(values.length - 1, 1);
+    const points = values.map((v, i) => {
+        const x = pad + i * step;
+        const y = pad + (1 - (v / maxV)) * (height - pad*2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+
+    html += `<div class="usage-sparkline"><svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">`;
+    html += `<polyline points="${points}" fill="none" stroke="#3a86ff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />`;
+    html += `</svg></div>`;
+
+    html += `<div class="usage-list">`;
+    data.last_6_months.forEach(item => {
+        html += `<div class="usage-item"><div class="usage-month">${item.month}</div><div class="usage-pages">${item.pages}</div></div>`;
+    });
+    html += `</div>`;
+
+    html += `<div style="margin-top:8px"><button class="btn btn-secondary" onclick="exportUsageCsv('${data.ip}')">Export CSV</button></div>`;
+    html += `</div>`;
+    return html;
+}
+
+// Export CSV for a single printer
+async function exportUsageCsv(ip){
+    try{
+        const res = await fetch(`/api/printers/${ip}/usage.csv`);
+        if(!res.ok) throw new Error('Failed to fetch CSV');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `usage_${ip}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    }catch(e){
+        console.error('Export failed', e);
+        showNotification('Export failed', 'error');
+    }
 }
 
 // Render supplies section
@@ -601,6 +688,11 @@ function handleSearch(event) {
 // Filter handler
 function handleFilter(event) {
     filterStatus = event.target.value;
+    renderPrinterList();
+}
+
+function handleViewChange(event) {
+    filterView = event.target.value;
     renderPrinterList();
 }
 
